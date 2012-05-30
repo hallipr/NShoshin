@@ -48,9 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="TDD\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\NShoshin.Console\NShoshin.Console.csproj">
       <Project>{AAFF268F-234C-4F6A-9F9F-CB2338F633DD}</Project>

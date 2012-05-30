@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Text;
 
 namespace NShoshin.Console
 {
-	class Program
+	public static class Program
 	{
-		static void Main(string[] args)
+		[STAThread]
+		public static void Main()
 		{
+			var runner = new WatinRunner();
+			runner.Solve("http://www.websudoku.com/?level=4");
 		}
 	}
 }

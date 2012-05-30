@@ -4,23 +4,22 @@ namespace NShoshin.Console
 {
 	public class Puzzle
 	{
-		private readonly Cell[] _cells;
+		public readonly Cell[] Cells;
 
 		public Puzzle()
 		{
-			_cells = Enumerable.Range(0, 9)
+			Cells = Enumerable.Range(0, 9)
 				.SelectMany(r => Enumerable.Range(0, 9)
-				                 	.Select(c => new Cell(r, c))
-				)
+				    .Select(c => new Cell(this, r, c)))
 				.ToArray();
 
-			Rows = _cells.GroupBy(c => c.Row, (row, cells) => cells.ToArray())
+			Rows = Cells.GroupBy(c => c.Row, (row, cells) => cells.ToArray())
 				.ToArray();
 
-			Columns = _cells.GroupBy(c => c.Column, (column, cells) => cells.ToArray())
+			Columns = Cells.GroupBy(c => c.Column, (column, cells) => cells.ToArray())
 				.ToArray();
 
-			Groups = _cells.GroupBy(c => c.Group, (group, cells) => cells.ToArray())
+			Groups = Cells.GroupBy(c => c.Group, (group, cells) => cells.ToArray())
 				.ToArray();
 		}
 
@@ -32,7 +31,7 @@ namespace NShoshin.Console
 		{ 
 			get
 			{
-				return !HasErrors && _cells.All(c => c.Answer.HasValue);
+				return !HasErrors && Cells.All(c => c.PossibleAnswers.Count == 1);
 			} 
 		}
 
