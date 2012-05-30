@@ -15,6 +15,7 @@ namespace NShoshin.Console
 		private Puzzle _puzzle;
 
 		private Dictionary<Tuple<int, int>, Element> _inputs;
+		private Dictionary<Tuple<int, int>, Number?> _answers;
 
 		public void Solve(string url)
 		{
@@ -23,7 +24,7 @@ namespace NShoshin.Console
 
 			var solver = new Solver();
 
-			//solver.Reduced += SolverOnReduced;
+			// solver.Reduced += SolverOnReduced;
 
 			solver.Solve(_puzzle);
 
@@ -32,6 +33,11 @@ namespace NShoshin.Console
 			if (_puzzle.IsSolved)
 			{
 				return;
+			}
+
+			if(_puzzle.HasErrors)
+			{
+				System.Console.WriteLine("Puzzle has Errors");
 			}
 
 			if (File.Exists("e:\\out.html"))
@@ -71,13 +77,9 @@ namespace NShoshin.Console
 					
 					outString.Append(string.Format("<td style=\"{0}\">", style));
 
-					var stringNumbers = cell.PossibleAnswers
-						.Select(n => (int)n + 1)
-						.Select(n => n.ToString(CultureInfo.InvariantCulture));
-
-					foreach (var stringNumber in stringNumbers)
+					foreach (var number in cell.PossibleAnswers)
 					{
-						outString.AppendLine(stringNumber);
+						outString.AppendLine(Convert.ToString((int)number));
 					}
 
 					outString.AppendLine("</td>");
@@ -102,17 +104,12 @@ namespace NShoshin.Console
 				var answer = cell.PossibleAnswers[0];
 
 				var id = Tuple.Create(cell.Column, cell.Row);
-				var input = _inputs[id];
 
-				var number = GetNumber(input.GetAttributeValue("value"));
-
-				if (number != answer)
+				if (_answers[id] == null)
 				{
-					var intAnswer = (int)answer + 1;
-					var stringAnswer = intAnswer.ToString(CultureInfo.InvariantCulture);
-
-					input.SetAttributeValue("Value", stringAnswer);
-					input.Blur();
+					_answers[id] = answer;
+					_inputs[id].SetAttributeValue("Value", Convert.ToString((int)answer));
+					_inputs[id].Blur();
 				}
 			}
 		}
@@ -120,6 +117,7 @@ namespace NShoshin.Console
 		private Puzzle ParsePuzzle()
 		{
 			_inputs = new Dictionary<Tuple<int, int>, Element>();
+			_answers = new Dictionary<Tuple<int, int>, Number?>();
 
 			var frame = _browser.Frames[0];
 			var table = frame.Table(Find.ByClass("t"));
@@ -131,8 +129,11 @@ namespace NShoshin.Console
 				{
 					var id = string.Format("f{0}{1}", column, row);
 					var input = table.Element(Find.ById(id));
-					_inputs[Tuple.Create(column, row)] = input;
 					var number = GetNumber(input.GetAttributeValue("value"));
+
+					var key = Tuple.Create(column, row);
+					_inputs[key] = input;
+					_answers[key] = number;
 					
 					if (number.HasValue)
 					{

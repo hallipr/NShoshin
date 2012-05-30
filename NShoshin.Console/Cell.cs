@@ -63,6 +63,14 @@ namespace NShoshin.Console
 			}
 		}
 
+		public string Coordinates
+		{ 
+			get
+			{
+				return string.Format("({0}, {1})", Column + 1, Row + 1);
+			} 
+		}
+
 		public void SetAnswer(Number number)
 		{
 			PossibleAnswers = new List<Number> { number };

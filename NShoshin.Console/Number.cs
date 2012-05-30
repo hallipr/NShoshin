@@ -2,7 +2,7 @@ namespace NShoshin.Console
 {
 	public enum Number
 	{
-		One,
+		One = 1,
 		Two,
 		Three,
 		Four,
