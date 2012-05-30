@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NShoshin.Console")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("EBSCO Industries, Inc.")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NShoshin.Console")]
-[assembly: AssemblyCopyright("Copyright © EBSCO Industries, Inc. 2012")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
