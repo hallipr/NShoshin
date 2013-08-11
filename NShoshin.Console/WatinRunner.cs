@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -39,13 +39,16 @@ namespace NShoshin.Console
 			{
 				System.Console.WriteLine("Puzzle has Errors");
 			}
+		    var tempPath = Path.GetTempPath();
 
-			if (File.Exists("e:\\out.html"))
-			{
-				File.Delete("e:\\out.html");
-			}
+		    string tempFileName;
+		    do
+		    {
+		        tempFileName = Path.Combine(tempPath, Guid.NewGuid().ToString().Remove(8) + ".html");
+		    } while (File.Exists(tempFileName));
 
-			File.WriteAllText("e:\\out.html", GetPuzzleHtml());
+            File.WriteAllText(tempFileName, GetPuzzleHtml());
+		    Process.Start(tempFileName);
 		}
 
 		public string GetPuzzleHtml()
