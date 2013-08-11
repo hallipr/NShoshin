@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace NShoshin.Console
 {
-	public class Solver
+	public class Solver : ISolver
 	{
 		public event EventHandler Reduced;
 
@@ -138,6 +138,7 @@ namespace NShoshin.Console
 		}
 
 		// If a number is only available in a singe row or column within a group, it must be used in that group.
+        // If a number must be in a certain group column, it cannot be in another group in the same column.
 		private void ReduceUsingPerGroupColumnsOrRows(Puzzle puzzle)
 		{
 			foreach (var cellGroup in puzzle.Groups)
@@ -177,7 +178,7 @@ namespace NShoshin.Console
 		}
 
 		// If 2 groups have cells that would cross reduce, then those answers cannot be used by any other cells.
-		private void ReduceUsingsGroupRows(Puzzle puzzle)
+		private void ReduceUsingRowsOfGroups(Puzzle puzzle)
 		{
 			var groupRows = puzzle.Groups.GroupBy(g => g.First().Row).ToArray();
 
@@ -186,7 +187,7 @@ namespace NShoshin.Console
 				var reducingGroups = groupRow.SelectMany(cells => cells)
 					.GroupBy(c => c.PossibleAnswerHash)
 					.Select(g => new { Cells = g.ToArray(), Answers = g.First().PossibleAnswers })
-					.Where(g => g.Cells.Length > 1)  // There is an set
+					.Where(g => g.Cells.Length > 1)  // There is a set
 					.Where(g => g.Answers.Count == g.Cells.Length) // There is an excliving set
 					.Where(g => g.Cells.GroupBy(c => c.Group).Count() == 2);  // The set spans two groups
 
