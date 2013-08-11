@@ -56,7 +56,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdvancedSolver.cs" />
     <Compile Include="Cell.cs" />
+    <Compile Include="GuessingSolver.cs" />
     <Compile Include="ISolver.cs" />
     <Compile Include="Number.cs" />
     <Compile Include="Program.cs" />

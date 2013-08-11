@@ -53,7 +53,7 @@ namespace NShoshin.Console
 			}
 		} 
 
-		public List<Number> PossibleAnswers { get; private set; }
+		public List<Number> PossibleAnswers { get; set; }
 
 		public int PossibleAnswerHash
 		{ 
@@ -78,10 +78,7 @@ namespace NShoshin.Console
 
 		public void RemoveAnwer(Number number)
 		{
-			if (PossibleAnswers.Contains(number))
-			{
-				PossibleAnswers.Remove(number);
-			}
+            PossibleAnswers.RemoveAll(n => n == number);
 		}
 	}
 }

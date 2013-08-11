@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -8,7 +9,7 @@ namespace NShoshin.Console
 	{
 		public event EventHandler Reduced;
 
-		public void Solve(Puzzle puzzle)
+		public virtual void Solve(Puzzle puzzle)
 		{
 			bool success;
 			var count = puzzle.Cells.Count(c => c.PossibleAnswers.Count > 1);
@@ -28,7 +29,7 @@ namespace NShoshin.Console
 			while (success && count > 0 && !puzzle.HasErrors);
 		}
 
-		private void ApplyReductions(Puzzle puzzle)
+        protected virtual void ApplyReductions(Puzzle puzzle)
 		{
 			RemoveAnsweredFromOtherPossibles(puzzle);
 
@@ -47,7 +48,7 @@ namespace NShoshin.Console
 			// ReduceUsingsGroupRows(puzzle);
 		}
 
-		private void RemoveAnsweredFromOtherPossibles(Puzzle puzzle)
+		protected void RemoveAnsweredFromOtherPossibles(Puzzle puzzle)
 		{
 			bool success;
 			var count = puzzle.Cells.Count(c => c.PossibleAnswers.Count > 1);
@@ -57,7 +58,12 @@ namespace NShoshin.Console
 				var answeredCells = puzzle.Cells.Where(c => c.PossibleAnswers.Count == 1).ToArray();
 				foreach (var cell in answeredCells)
 				{
-					var answer = cell.PossibleAnswers[0];
+					if (!cell.PossibleAnswers.Any())
+					{
+					    return;
+					}
+                    
+                    var answer = cell.PossibleAnswers[0];
 
 					var otherCells = cell.OtherColumnCells.Union(cell.OtherGroupCells).Union(cell.OtherRowCells)
 						.Where(c => c.PossibleAnswers.Contains(answer))
@@ -177,72 +183,7 @@ namespace NShoshin.Console
 			}
 		}
 
-		// If 2 groups have cells that would cross reduce, then those answers cannot be used by any other cells.
-		private void ReduceUsingRowsOfGroups(Puzzle puzzle)
-		{
-			var groupRows = puzzle.Groups.GroupBy(g => g.First().Row).ToArray();
-
-			foreach (var groupRow in groupRows)
-			{
-				var reducingGroups = groupRow.SelectMany(cells => cells)
-					.GroupBy(c => c.PossibleAnswerHash)
-					.Select(g => new { Cells = g.ToArray(), Answers = g.First().PossibleAnswers })
-					.Where(g => g.Cells.Length > 1)  // There is a set
-					.Where(g => g.Answers.Count == g.Cells.Length) // There is an excliving set
-					.Where(g => g.Cells.GroupBy(c => c.Group).Count() == 2);  // The set spans two groups
-
-				// The remaining group cannot have any of the set's answers in any row used by the set
-				foreach (var reducingGroup in reducingGroups)
-				{
-					var activeGroups = reducingGroup.Cells.Select(c => c.Group).Distinct().ToArray();
-					var affectedRows = reducingGroup.Cells.Select(c => c.Row).Distinct().ToArray();
-
-					var affectedCells = groupRow.SelectMany(g => g)
-						.Where(c => activeGroups.Contains(c.Group))
-						.Where(c => affectedRows.Contains(c.Row))
-						.ToArray();
-
-					foreach (var affectedCell in affectedCells)
-					{
-						affectedCell.PossibleAnswers.RemoveAll(reducingGroup.Answers.Contains);
-					}
-				}
-			}
-		}
-
-		private void ReduceUsingsGroupColumns(Puzzle puzzle)
-		{
-			var groupColumns = puzzle.Groups.GroupBy(g => g.First().Column).ToArray();
-
-			foreach (var groupRow in groupColumns)
-			{
-				var reducingGroups = groupRow.SelectMany(cells => cells)
-					.GroupBy(c => c.PossibleAnswerHash)
-					.Select(g => new { Cells = g.ToArray(), Answers = g.First().PossibleAnswers })
-					.Where(g => g.Cells.Length > 1)  // There is an set
-					.Where(g => g.Answers.Count == g.Cells.Length) // There is an excliving set
-					.Where(g => g.Cells.GroupBy(c => c.Group).Count() == 2);  // The set spans two groups
-
-				// The remaining group cannot have any of the set's answers in any row used by the set
-				foreach (var reducingGroup in reducingGroups)
-				{
-					var activeGroups = reducingGroup.Cells.Select(c => c.Group).Distinct().ToArray();
-					var affectedColumns = reducingGroup.Cells.Select(c => c.Column).Distinct().ToArray();
-
-					var affectedCells = groupRow.SelectMany(g => g)
-						.Where(c => activeGroups.Contains(c.Group))
-						.Where(c => affectedColumns.Contains(c.Column))
-						.ToArray();
-
-					foreach (var affectedCell in affectedCells)
-					{
-						affectedCell.PossibleAnswers.RemoveAll(reducingGroup.Answers.Contains);
-					}
-				}
-			}
-		}
-
-		private void WriteLine(string value)
+	    protected void WriteLine(string value)
 		{
 			System.Console.WriteLine(value);
 		}

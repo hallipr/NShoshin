@@ -14,5 +14,10 @@ namespace NShoshin.Console
 				.GroupBy(c => c.PossibleAnswers[0])
 				.Any(g => g.Count() > 1);
 		}
+
+	    public static bool HasNoPossibleAnswers(Cell arg)
+	    {
+	        return !arg.PossibleAnswers.Any();
+	    }
 	}
 }

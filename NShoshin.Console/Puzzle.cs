@@ -23,7 +23,20 @@ namespace NShoshin.Console
 				.ToArray();
 		}
 
-		public Cell[][] Rows { get; private set; }
+	    public Puzzle(Puzzle puzzleToClone) : this()
+	    {
+	        CopyCellsFrom(puzzleToClone);
+	    }
+
+	    public void CopyCellsFrom(Puzzle puzzleToClone)
+	    {
+	        foreach (var cellSet in Cells.Zip(puzzleToClone.Cells, (n, o) => new {New = n, Old = o}))
+	        {
+	            cellSet.New.PossibleAnswers = cellSet.Old.PossibleAnswers.ToList();
+	        }
+	    }
+
+	    public Cell[][] Rows { get; private set; }
 		public Cell[][] Columns { get; private set; }
 		public Cell[][] Groups { get; private set; }
 
@@ -41,7 +54,8 @@ namespace NShoshin.Console
 			{
 				return Rows.Any(Validations.HasDuplicates) || 
 				       Columns.Any(Validations.HasDuplicates) || 
-				       Groups.Any(Validations.HasDuplicates);
+				       Groups.Any(Validations.HasDuplicates) ||
+                       Cells.Any(Validations.HasNoPossibleAnswers);
 			}
 		}
 	}

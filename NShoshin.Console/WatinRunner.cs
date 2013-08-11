@@ -22,7 +22,7 @@ namespace NShoshin.Console
 			_browser = new IE(url);
 			_puzzle = ParsePuzzle();
 
-			var solver = new Solver();
+            var solver = new GuessingSolver();
 
 			// solver.Reduced += SolverOnReduced;
 
